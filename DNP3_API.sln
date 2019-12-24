@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNP3_API", "DNP3_API.csproj", "{91F7DF96-A836-4A93-A42A-53723B148338}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNP3_API", "DNP3_API.csproj", "{91F7DF96-A836-4A93-A42A-53723B148338}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DNP3_DAL\DAL\DAL.csproj", "{FB5E8D39-2789-44FD-B4B7-FE2A209E97B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTO", "DNP3_DTO\DTO\DTO.csproj", "{78EC3CEE-0D51-4576-AA69-08372E68A32F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UTILS", "UTILS\UTILS\UTILS.csproj", "{1B794204-3E63-407F-84DD-DB36927FBB05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{91F7DF96-A836-4A93-A42A-53723B148338}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91F7DF96-A836-4A93-A42A-53723B148338}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91F7DF96-A836-4A93-A42A-53723B148338}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB5E8D39-2789-44FD-B4B7-FE2A209E97B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB5E8D39-2789-44FD-B4B7-FE2A209E97B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB5E8D39-2789-44FD-B4B7-FE2A209E97B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB5E8D39-2789-44FD-B4B7-FE2A209E97B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78EC3CEE-0D51-4576-AA69-08372E68A32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78EC3CEE-0D51-4576-AA69-08372E68A32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78EC3CEE-0D51-4576-AA69-08372E68A32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78EC3CEE-0D51-4576-AA69-08372E68A32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B794204-3E63-407F-84DD-DB36927FBB05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B794204-3E63-407F-84DD-DB36927FBB05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B794204-3E63-407F-84DD-DB36927FBB05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B794204-3E63-407F-84DD-DB36927FBB05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
