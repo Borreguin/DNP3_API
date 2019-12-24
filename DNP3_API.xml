@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DNP3_API</name>
+    </assembly>
+    <members>
+        <member name="M:DNP3_API.Controllers.Test.Post(DTO.API_DEVICE_MODEL)">
+            <summary>
+            Populate a DNP3 device
+            </summary>
+            <remarks>This API will insert a DNP3 device.</remarks>
+            <param name="id"></param>
+            <response code="201">The new device was created</response>
+            <response code="400">If the item is null</response>
+        </member>
+        <member name="M:DNP3_API.Controllers.Test.Delete(System.Int32)">
+            <summary>
+            Delete API Value
+            </summary>
+            <remarks>This API will delete the values.</remarks>
+            <param name="id"></param>
+        </member>
+    </members>
+</doc>
