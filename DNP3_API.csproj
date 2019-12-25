@@ -23,8 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DNP3_DAL\DAL\DAL.csproj" />
-    <ProjectReference Include="..\DNP3_DTO\DTO\DTO.csproj" />
+    <Folder Include="Modules\" />
   </ItemGroup>
 
 </Project>
