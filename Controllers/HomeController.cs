@@ -17,15 +17,13 @@ namespace DNP3_API.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
-
+            ViewData["Message"] = "A DNP3 API, to get information from diferent DNP3 devices";
             return View();
         }
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
-
+            ViewData["Message"] = "DNP3 API, you can contact me at:";
             return View();
         }
 

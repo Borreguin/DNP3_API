@@ -71,13 +71,14 @@ namespace DNP3_API
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            /*app.UseMvc(routes =>
+            app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-            });*/
-            app.UseMvc();
+            });
+
+            //app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DNP3 API");

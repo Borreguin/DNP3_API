@@ -24,10 +24,17 @@ namespace DNP3_API.Controllers
         }
 
         // GET: api/Devices/5
-        [Microsoft.AspNetCore.Mvc.HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        /// <summary>
+        /// Get configurations for a DNP3 device by his name
+        /// </summary>
+        /// <param name="device_name"></param>
+        /// <returns></returns>
+        [Microsoft.AspNetCore.Mvc.HttpGet("{device_name}", Name = "Get")]
+        public API_DEVICE_MODEL Get(string device_name)
         {
-            return "value";
+            _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
+            dnp3_db.read_by_device_name(device_name);
+            return new API_DEVICE_MODEL();
         }
 
         // POST api/<controller>

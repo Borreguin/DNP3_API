@@ -15,19 +15,16 @@ namespace UTILS
 
         public HttpResponseMessage get_http_response() {
             HttpResponseMessage http_message = new HttpResponseMessage();
-            // HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(this), Encoding.UTF8);
-            // http_message.Content = httpContent;
-            
+            http_message.ReasonPhrase = message;
+
             if (succesful)
             {
                 http_message.StatusCode = HttpStatusCode.OK;
-                http_message.Content = new StringContent(message);
                 return http_message;
             }
             else
             {
                 http_message.StatusCode = HttpStatusCode.BadRequest;
-                http_message.ReasonPhrase = message;
                 return http_message;
             }
         }

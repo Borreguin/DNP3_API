@@ -14,11 +14,12 @@
         private readonly SqliteConnection conn = new SqliteConnection();
         private readonly string db_table = "devices";
         private static readonly string KEY_1_ID_MEDIDOR = "Id";
-        private static readonly string KEY_2_NAME = "Name";
-        private static readonly string KEY_3_DNP3_CONFIG = "DNP3_config";
-        private static readonly string KEY_4_NETWORK = "Network_config";
-        private static readonly string KEY_5_SERIAL = "Serial_config";
-        private static readonly string KEY_6_JSON_info = "JSON_info";
+        private static readonly string KEY_2_ID_NAME = "Id_name";
+        private static readonly string KEY_3_NAME = "Name";
+        private static readonly string KEY_4_DNP3_CONFIG = "DNP3_config";
+        private static readonly string KEY_5_NETWORK = "Network_config";
+        private static readonly string KEY_6_SERIAL = "Serial_config";
+        private static readonly string KEY_7_JSON_INFO = "JSON_info";
 
         public bool create_table()
         {
@@ -29,11 +30,12 @@
                 sqlite.Open();
                 string sql = $"create table {db_table} (" +
                     $"{KEY_1_ID_MEDIDOR} INTEGER PRIMARY KEY, " +
-                    $"{KEY_2_NAME} TEXT NOT NULL UNIQUE, " +
-                    $"{KEY_3_DNP3_CONFIG} TEXT, " +
-                    $"{KEY_4_NETWORK} TEXT, " +
-                    $"{KEY_5_SERIAL} TEXT, " +
-                    $"{KEY_6_JSON_info} TEXT" +
+                    $"{KEY_2_ID_NAME} TEXT NOT NULL UNIQUE, " +
+                    $"{KEY_3_NAME} TEXT NOT NULL UNIQUE, " +
+                    $"{KEY_4_DNP3_CONFIG} TEXT, " +
+                    $"{KEY_5_NETWORK} TEXT, " +
+                    $"{KEY_6_SERIAL} TEXT, " +
+                    $"{KEY_7_JSON_INFO} TEXT" +
                     $")";
                 using (SQLiteCommand command = new SQLiteCommand(sql, sqlite))
                 {
@@ -60,7 +62,7 @@
                 device.setDeviceCode = device_model.device_code;
                 return insert(device);
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
                 return new ReturnInfo()
                 {
                     succesful = false,
@@ -76,6 +78,10 @@
             {
                 using (var sqlite = conn.new_connection())
                 {
+
+                    string[] attr_device_config = new string[] { "device_serie", "active", "group", "trace_level"};
+                    JObject device_config = CollectionHelper.Get_json_from(device, attr_device_config);
+
                     string[] attr_dnp3_config = new string[] { "remote_address", "server_address", "integrity_polling_seconds",
                     "class1_polling_seconds", "class2_polling_seconds", "class3_polling_seconds", "comm_media"};
                     JObject dnp3_config = CollectionHelper.Get_json_from(device.dnp3_client_config, attr_dnp3_config);
@@ -86,15 +92,18 @@
                     JObject comm_ser = CollectionHelper.Get_json_from(device.gen_com_serial, attr_comm_ser);
 
                     JObject JSON_object = new JObject();
+                    JSON_object.Add("device_config", device_config);
 
                     sqlite.Open();
                     string sql = $"INSERT INTO {db_table} " +
-                    $"({KEY_2_NAME}, " +
-                    $"{KEY_3_DNP3_CONFIG}, " +
-                    $"{KEY_4_NETWORK}, " +
-                    $"{KEY_5_SERIAL}, " +
-                    $"{KEY_6_JSON_info}) " +
+                    $"({KEY_2_ID_NAME}, " +
+                    $"({KEY_3_NAME}, " +
+                    $"{KEY_4_DNP3_CONFIG}, " +
+                    $"{KEY_5_NETWORK}, " +
+                    $"{KEY_6_SERIAL}, " +
+                    $"{KEY_7_JSON_INFO}) " +
                     $"VALUES(" +
+                    $" '{device.device_code}'," +
                     $" '{device.device_name}'," +
                     $" '{dnp3_config.ToString()}', " +
                     $" '{((comm_net == null) ? "" : comm_net.ToString())}' , " +
@@ -120,7 +129,7 @@
                     return new ReturnInfo
                     {
                         succesful = false,
-                        message = $"El dispositivo {device.device_name} ya ha sido ingresado en base de datos",
+                        message = $"El dispositivo ({device.device_name}, {device.device_code}) ya existe en base de datos",
                         inner_exception = null
                     };
                 }
@@ -139,6 +148,40 @@
             }
         }
 
+        public void read_by_device_name(string device_name) {
+            GEN_DEVICE Device = new GEN_DEVICE();
+            DataTable dt = new DataTable();
+            try
+            {
+                using (var sqlite = conn.new_connection())
+                {
+                    sqlite.Open();
+                    string sql = $"SELECT * FROM {db_table} WHERE {KEY_3_NAME} = '{device_name}'";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, sqlite))
+                    {
+                        SQLiteDataReader reader = command.ExecuteReader();
+                        dt.Load(reader);
+                        reader.Close();
+                        if (dt.Rows.Count > 0)
+                        {
+                            DataRow row = dt.Rows[0];
+                            GEN_DEVICE device = CollectionHelper.CreateItem<GEN_DEVICE>(row);
+                            Console.WriteLine(row);
+                            /*lbl_name = row["name"].ToString();
+                            lbl_gender = row["gender"].ToString();
+                            lbl_contact = row["contactno"].ToString();*/
+                        }
+                        //lstDevice = CollectionHelper.ConvertTo<GEN_DEVICE>(dt).ToList();
+                        Console.WriteLine(dt);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+        }
 
         public IEnumerable<GEN_DEVICE> read_all() {
             List<GEN_DEVICE> lstDevice = new List<GEN_DEVICE>();
@@ -148,7 +191,7 @@
                 using (var sqlite = conn.new_connection())
                 {
                     sqlite.Open();
-                    string sql = $"SELECT * FROM {db_table} ORDER BY {KEY_2_NAME}";
+                    string sql = $"SELECT * FROM {db_table} ORDER BY {KEY_3_NAME}";
                     using (SQLiteCommand command = new SQLiteCommand(sql, sqlite))
                     {
                         SQLiteDataReader reader = command.ExecuteReader();

@@ -11,7 +11,7 @@ namespace DAL
         private string DB_name = "devices.db";
 
         public bool create_db_if_not_exist() {
-            string event_db_path = Path.Combine(Directory.GetCurrentDirectory(), "Database", DB_name);
+            string event_db_path = Path.Combine(Directory.GetCurrentDirectory(), DB_name);
 
             if (!System.IO.File.Exists(event_db_path))
             {
