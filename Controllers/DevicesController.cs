@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DTO;
 using DAL;
+using UTILS;
+using System.Net.Http;
+using System.Net;
+
 
 namespace DNP3_API.Controllers
 {
@@ -14,14 +17,14 @@ namespace DNP3_API.Controllers
     public class DevicesController : ControllerBase
     {
         // GET: api/Devices
-        [HttpGet]
+        [Microsoft.AspNetCore.Mvc.HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
         // GET: api/Devices/5
-        [HttpGet("{id}", Name = "Get")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
             return "value";
@@ -34,24 +37,26 @@ namespace DNP3_API.Controllers
         /// <remarks>This API will insert a DNP3 device.</remarks>
         /// <param name="id"></param>
         /// <response code="200">The new device was created</response>
-        /// <response code="400">If the item is null</response>
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        /// <response code="400">The new device was not created</response>
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public void Post([FromBody]API_DEVICE_MODEL device)
+        public HttpResponseMessage Post([System.Web.Http.FromBody]API_DEVICE_MODEL device)
         {
-            _DNP3_client_DB dnp3_client = new _DNP3_client_DB();
-            dnp3_client.insert(device);
+            _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
+            device.setDeviceCode = device.getCode(device.device_name);
+            ReturnInfo result = dnp3_db.insert(device);
+            return result.get_http_response();
         }
 
         // PUT: api/Devices/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Microsoft.AspNetCore.Mvc.HttpPut("{id}")]
+        public void Put(int id, [Microsoft.AspNetCore.Mvc.FromBody] string value)
         {
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
+        [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
         public void Delete(int id)
         {
         }

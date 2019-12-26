@@ -63,8 +63,8 @@
             catch(Exception ex) {
                 return new ReturnInfo()
                 {
-                    succesful = true,
-                    message = $"Device {device_model.device_name} was inserted",
+                    succesful = false,
+                    message = $"Device {device_model.device_name} was not inserted",
                     inner_exception = ex
                 };
             }
@@ -76,13 +76,12 @@
             {
                 using (var sqlite = conn.new_connection())
                 {
-                    string[] attr_dnp3_config = new string[] { "Remote_Address", "Server_Address", "Integrity_PollingSeconds",
-                    "Class1_PollingSeconds", "Class2_PollingSeconds", "Class3_PollingSeconds", "Autentication",
-                    "Update_KeyHex", "Media", "User_Number"};
+                    string[] attr_dnp3_config = new string[] { "remote_address", "server_address", "integrity_polling_seconds",
+                    "class1_polling_seconds", "class2_polling_seconds", "class3_polling_seconds", "comm_media"};
                     JObject dnp3_config = CollectionHelper.Get_json_from(device.dnp3_client_config, attr_dnp3_config);
 
-                    string[] attr_comm_net = new string[] { "IP", "_Port", "_Protocol" };
-                    string[] attr_comm_ser = new string[] { "BaudRate", "DataBit", "Parity", "StopBits", "Timeout_Value" };
+                    string[] attr_comm_net = new string[] { "ip_address", "port", "protocol" };
+                    string[] attr_comm_ser = new string[] { "baud_rate", "data_bit", "parity", "stop_bits", "timeout" };
                     JObject comm_net = CollectionHelper.Get_json_from(device.gen_com_network, attr_comm_net);
                     JObject comm_ser = CollectionHelper.Get_json_from(device.gen_com_serial, attr_comm_ser);
 
@@ -109,7 +108,7 @@
                 return new ReturnInfo
                 {
                     succesful = true,
-                    message = "El dispositivo ha sido ingresado en base de datos",
+                    message = $"Device {device.device_name} ha sido ingresado en base de datos",
                     inner_exception = null
                 };
             }
@@ -121,7 +120,7 @@
                     return new ReturnInfo
                     {
                         succesful = false,
-                        message = "El dispositivo ya ha sido ingresado en base de datos",
+                        message = $"El dispositivo {device.device_name} ya ha sido ingresado en base de datos",
                         inner_exception = null
                     };
                 }

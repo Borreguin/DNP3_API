@@ -13,7 +13,11 @@
         private string _Name;
         private int _GroupScan;
         private bool _Active;
-        
+        private int _unique_code = (int)(DateTime.Now.Year + DateTime.Now.Month * 1000 
+            + DateTime.Now.Day * 1000 + DateTime.Now.Hour * 100 + DateTime.Now.Minute * 10
+            + DateTime.Now.Second + DateTime.Now.Millisecond / 100);
+
+
 
         public DNP3_CLIENT_CONFIG dnp3_client_config = new DNP3_CLIENT_CONFIG();
         public DTO_GEN_COM_NETWORK gen_com_network = new DTO_GEN_COM_NETWORK();
@@ -132,8 +136,8 @@
         }
 
         public string getCode(string Name) {
-            Name = Name.Replace(" ", "*").ToUpper();
-            DateTime ldate = DateTime.Now;
+            Name = Name.Replace(" ", "_").ToUpper();
+            
             int n = Math.Min(10, Name.Length);
             if (n < 10) {
                 int r = 10 - n;
@@ -144,8 +148,16 @@
             string n_str = Name.Substring(0, 5) +
                 Name.Substring((int) (n/2), 5) +
                 Name.Substring(Name.Length-5);
-            n_str = "DNP-" + n_str.ToUpper() + "-" + (int)(ldate.Year + ldate.Month*1000 + ldate.Day*1000 + ldate.Hour*100 + ldate.Minute*10 + ldate.Second + ldate.Millisecond/100);
+            n_str = "DNP-" + n_str.ToUpper() + "-" + _unique_code;         
             return n_str;
+        }
+
+        public string setDeviceCode
+        {
+            set
+            {
+                _IdDeviceName = value;
+            }
         }
 
     }

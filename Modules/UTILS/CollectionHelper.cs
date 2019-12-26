@@ -274,22 +274,40 @@ namespace UTILS
             var result = new JObject();
             foreach (string att in AttributeNames)
             {
-                object attr_value = GetPropValue(obj_src, att);
-                if (attr_value.GetType() == typeof(int))
+                try
                 {
-                    result.Add(att, (int)attr_value);
+                    object attr_value = GetPropValue(obj_src, att);
+                    Console.WriteLine(typeof(Int32));
+                    Console.WriteLine(typeof(Int64));
+                    Console.WriteLine(typeof(long));
+                    switch (attr_value.GetType().ToString())
+                    {
+                        case "System.Int32":
+                            result.Add(att, (int)attr_value);
+                            break;
+                        case "System.Int64":
+                            result.Add(att, (long)attr_value);
+                            break;
+                        case "System.Single":
+                            result.Add(att, (float)attr_value);
+                            break;
+                        case "System.String":
+                            result.Add(att, (string)attr_value);
+                            break;
+                        case "System.Byte":
+                            result.Add(att, (byte)attr_value);
+                            break;
+                        default:
+                            result.Add(att, (string)attr_value.ToString());
+                            break;
+                    }
                 }
-                if (attr_value.GetType() == typeof(float))
+                catch (NullReferenceException ex)
                 {
-                    result.Add(att, (float)attr_value);
+                    result.Add(att, null);
                 }
-                if (attr_value.GetType() == typeof(string))
-                {
-                    result.Add(att, (string)attr_value);
-                }
-                if (attr_value.GetType() == typeof(byte))
-                {
-                    result.Add(att, (byte)attr_value);
+                catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
                 }
             }
             return result;
