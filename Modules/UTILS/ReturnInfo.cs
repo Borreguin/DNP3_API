@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace UTILS
 {
@@ -15,7 +16,7 @@ namespace UTILS
 
         public HttpResponseMessage get_http_response() {
             HttpResponseMessage http_message = new HttpResponseMessage();
-            http_message.ReasonPhrase = message;
+            http_message.ReasonPhrase = Regex.Replace(message, @"\t|\n|\r", "");  
 
             if (succesful)
             {

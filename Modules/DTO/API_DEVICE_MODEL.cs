@@ -109,6 +109,7 @@
             }
         }*/
 
+            
         [Category("4. Configuration Log"), DisplayName("LogType"), Description("Type Log to save")]
         public TraceLevel trace_level
         {

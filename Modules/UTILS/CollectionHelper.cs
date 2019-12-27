@@ -73,16 +73,60 @@ namespace UTILS
             return ConvertTo<T>(rows);
         }
 
+        /*
+        public static JObject ToJObject(DataRow row) {
+            JObject result = new JObject();
+            if (row != null) {
+                foreach (DataColumn column in row.Table.Columns) { 
+                }
+            }
+            return result;
+        }*/
+
+
+        public static T CreateItem<T>(JObject jObject) {
+            T obj = default(T);
+            obj = Activator.CreateInstance<T>();
+            var tipo = obj.GetType();
+
+            if (jObject != null)
+            {
+                foreach (var kv in jObject)
+                {
+                    PropertyInfo prop = tipo.GetProperty(kv.Key);
+                    //Console.WriteLine(prop.PropertyType);
+                    try
+                    {
+                        if (prop != null)
+                        {
+                            if (!prop.PropertyType.IsEnum)
+                            {
+                                prop.SetValue(obj, Transform(kv.Value), null);
+                            }
+                            else {
+                                prop.SetValue(obj, Transform(kv.Value, prop), null);
+                            }
+                            
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }
+            return obj;
+        }
+
         public static T CreateItem<T>(DataRow row)
         {
             T obj = default(T);
+            obj = Activator.CreateInstance<T>();
+            var tipo = obj.GetType();
             if (row != null)
             {
-                obj = Activator.CreateInstance<T>();
-
                 foreach (DataColumn column in row.Table.Columns)
                 {
-                    var tipo = obj.GetType();
                     PropertyInfo prop = tipo.GetProperty(column.ColumnName);
                     try
                     {
@@ -127,8 +171,6 @@ namespace UTILS
                                 if (jvalue != null)
                                 {
                                     prop = tipo.GetProperty(p.Name);
-                                    //Console.WriteLine(jvalue.GetType());
-                                    //Console.WriteLine(jvalue);
                                     Type propertyType = prop.PropertyType;
                                     jvalue = Convert.ChangeType(jvalue, propertyType);
                                     prop.SetValue(obj, jvalue, null);
@@ -176,20 +218,18 @@ namespace UTILS
                                 if (partial != null) return partial;
                             }
                         }
-                        /*Console.Write("Key: ");
-                        Console.WriteLine(item.Key);
-                        Console.Write("Value: ");
-                        Console.WriteLine(item.Value);
-                        Console.Write("search: ");
-                        Console.WriteLine(to_search);
-                        Console.WriteLine("");*/
-
-
                     }
                 }
             }
             return result;
         }
+
+        public static object Transform(JToken obj, PropertyInfo prop)
+        {
+            // var aux = Enum.ToObject(prop.PropertyType, obj.ToObject<String>());
+            return Enum.Parse(prop.PropertyType, obj.ToObject<String>());
+        }
+
         public static object Transform(JToken obj)
         {
             // TODO: make this do something
@@ -277,9 +317,6 @@ namespace UTILS
                 try
                 {
                     object attr_value = GetPropValue(obj_src, att);
-                    Console.WriteLine(typeof(Int32));
-                    Console.WriteLine(typeof(Int64));
-                    Console.WriteLine(typeof(long));
                     switch (attr_value.GetType().ToString())
                     {
                         case "System.Int32":

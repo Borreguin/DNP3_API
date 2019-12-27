@@ -16,10 +16,11 @@
         private static readonly string KEY_1_ID_MEDIDOR = "Id";
         private static readonly string KEY_2_ID_NAME = "Id_name";
         private static readonly string KEY_3_NAME = "Name";
-        private static readonly string KEY_4_DNP3_CONFIG = "DNP3_config";
+        private static readonly string KEY_4_DNP3_CONFIG = "Client_config";
         private static readonly string KEY_5_NETWORK = "Network_config";
         private static readonly string KEY_6_SERIAL = "Serial_config";
         private static readonly string KEY_7_JSON_INFO = "JSON_info";
+        private static readonly string KEY_JSON_INFO_1 = "device_config";
 
         public bool create_table()
         {
@@ -92,12 +93,12 @@
                     JObject comm_ser = CollectionHelper.Get_json_from(device.gen_com_serial, attr_comm_ser);
 
                     JObject JSON_object = new JObject();
-                    JSON_object.Add("device_config", device_config);
+                    JSON_object.Add(KEY_JSON_INFO_1, device_config);
 
                     sqlite.Open();
                     string sql = $"INSERT INTO {db_table} " +
                     $"({KEY_2_ID_NAME}, " +
-                    $"({KEY_3_NAME}, " +
+                    $"{KEY_3_NAME}, " +
                     $"{KEY_4_DNP3_CONFIG}, " +
                     $"{KEY_5_NETWORK}, " +
                     $"{KEY_6_SERIAL}, " +
@@ -165,7 +166,19 @@
                         if (dt.Rows.Count > 0)
                         {
                             DataRow row = dt.Rows[0];
-                            GEN_DEVICE device = CollectionHelper.CreateItem<GEN_DEVICE>(row);
+                            JObject dnp3_config = JObject.Parse(row[KEY_4_DNP3_CONFIG].ToString());
+                            JObject comm_net = JObject.Parse(row[KEY_5_NETWORK].ToString());
+                            JObject comm_ser = JObject.Parse(row[KEY_6_SERIAL].ToString());
+                            JObject json_config = JObject.Parse(row[KEY_7_JSON_INFO].ToString());
+                            JObject dev_config = json_config[KEY_JSON_INFO_1].ToObject<JObject>();
+                            // constructing device
+                            API_DEVICE_MODEL device = CollectionHelper.CreateItem<API_DEVICE_MODEL>(dev_config);
+                            DTO_GEN_COM_NETWORK net = CollectionHelper.CreateItem<DTO_GEN_COM_NETWORK>(comm_net);
+                            DTO_GEN_COM_SERIAL ser = CollectionHelper.CreateItem<DTO_GEN_COM_SERIAL>(comm_ser);
+
+                            //device.device_code = row[""];
+
+                            
                             Console.WriteLine(row);
                             /*lbl_name = row["name"].ToString();
                             lbl_gender = row["gender"].ToString();
