@@ -149,8 +149,8 @@
             }
         }
 
-        public void read_by_device_name(string device_name) {
-            GEN_DEVICE Device = new GEN_DEVICE();
+        public API_DEVICE_MODEL read_by_device_name(string device_name) {
+            API_DEVICE_MODEL device = new API_DEVICE_MODEL();
             DataTable dt = new DataTable();
             try
             {
@@ -172,20 +172,14 @@
                             JObject json_config = JObject.Parse(row[KEY_7_JSON_INFO].ToString());
                             JObject dev_config = json_config[KEY_JSON_INFO_1].ToObject<JObject>();
                             // constructing device
-                            API_DEVICE_MODEL device = CollectionHelper.CreateItem<API_DEVICE_MODEL>(dev_config);
-                            DTO_GEN_COM_NETWORK net = CollectionHelper.CreateItem<DTO_GEN_COM_NETWORK>(comm_net);
-                            DTO_GEN_COM_SERIAL ser = CollectionHelper.CreateItem<DTO_GEN_COM_SERIAL>(comm_ser);
+                            device = CollectionHelper.CreateItem<API_DEVICE_MODEL>(dev_config);
+                            device.gen_com_network = CollectionHelper.CreateItem<DTO_GEN_COM_NETWORK>(comm_net);
+                            device.gen_com_serial = CollectionHelper.CreateItem<DTO_GEN_COM_SERIAL>(comm_ser);
 
-                            //device.device_code = row[""];
-
-                            
-                            Console.WriteLine(row);
-                            /*lbl_name = row["name"].ToString();
-                            lbl_gender = row["gender"].ToString();
-                            lbl_contact = row["contactno"].ToString();*/
+                            device.device_name = row[KEY_3_NAME].ToString();
+                            device.setDeviceCode = row[KEY_2_ID_NAME].ToString();
                         }
-                        //lstDevice = CollectionHelper.ConvertTo<GEN_DEVICE>(dt).ToList();
-                        Console.WriteLine(dt);
+                        
                     }
                 }
             }
@@ -194,6 +188,7 @@
                 Console.WriteLine(ex);
             }
 
+            return device;
         }
 
         public IEnumerable<GEN_DEVICE> read_all() {

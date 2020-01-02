@@ -8,8 +8,8 @@ namespace DTO
     {
 
         private int _dataBit { get; set; }
-        private int _parity { get; set; }
-        private int _stopBits { get; set; }
+        private ParityValues _parity { get; set; }
+        private StopBitsValues _stopBits { get; set; }
         private int _timeout { get; set; }
         private BaudRateValues _baudRate;
 
@@ -46,7 +46,7 @@ namespace DTO
             _baudRate = BaudRateValues.b_2400;
             _parity = (int)ParityValues.None;
             _dataBit = 8;
-            _stopBits = (int)StopBitsValues.One;
+            _stopBits = StopBitsValues.One;
             _timeout = 3000;
         }
 
@@ -59,18 +59,18 @@ namespace DTO
         {
             get
             {
-                return (ParityValues)_parity;
+                return _parity;
                 //return Enum.Parse(typeof(ParityValues), Parity);
             }
-            set { _parity = (int)value; }
+            set { _parity = value; }
         }
 
         [Category("Configuración del puerto"), DescriptionAttribute("Bits de parada: Usado para indicar el fin de la comunicación " +
             "de un solo paquete. Los valores típicos son 1, 1.5 o 2 bits. ")]
         public StopBitsValues stop_bits
         {
-            get { return (StopBitsValues)_stopBits; }
-            set { _stopBits = (int)value; }
+            get { return _stopBits; }
+            set { _stopBits = value; }
         }
 
         [Category("Configuración del puerto"), DescriptionAttribute("Tiempo de espera en milisegundos. Una vez que la comunicación " +
@@ -79,11 +79,11 @@ namespace DTO
 
         [Category("Configuración del puerto"), DescriptionAttribute("Velocidad de transmisión (baud rate): Indica el número de bits " +
             "por segundo que se transfieren, y se mide en baudios (bauds)")]
-        public int baud_rate
+        public BaudRateValues baud_rate
         {
             get
             {
-                return (int)_baudRate;
+                return _baudRate;
             }
             set
             {

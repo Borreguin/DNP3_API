@@ -33,8 +33,7 @@ namespace DNP3_API.Controllers
         public API_DEVICE_MODEL Get(string device_name)
         {
             _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
-            dnp3_db.read_by_device_name(device_name);
-            return new API_DEVICE_MODEL();
+            return dnp3_db.read_by_device_name(device_name);
         }
 
         // POST api/<controller>

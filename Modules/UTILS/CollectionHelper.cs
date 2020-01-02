@@ -99,12 +99,15 @@ namespace UTILS
                     {
                         if (prop != null)
                         {
-                            if (!prop.PropertyType.IsEnum)
+                            if (prop.PropertyType.IsEnum)
                             {
-                                prop.SetValue(obj, Transform(kv.Value), null);
+                                prop.SetValue(obj, Transform(kv.Value, prop), null);
+                            }
+                            else if (prop.PropertyType == typeof(bool)) {
+                                prop.SetValue(obj, kv.Value.ToObject<bool>() , null);
                             }
                             else {
-                                prop.SetValue(obj, Transform(kv.Value, prop), null);
+                                prop.SetValue(obj, Transform(kv.Value), null);
                             }
                             
                         }
