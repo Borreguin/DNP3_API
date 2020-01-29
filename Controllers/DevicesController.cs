@@ -8,6 +8,7 @@ using DAL;
 using UTILS;
 using System.Net.Http;
 using System.Net;
+using System.Text.RegularExpressions;
 
 
 namespace DNP3_API.Controllers
@@ -16,14 +17,25 @@ namespace DNP3_API.Controllers
     [ApiController]
     public class DevicesController : ControllerBase
     {
-        // GET: api/Devices
+        // GET: api/device
+        /// <summary>
+        /// Return names of existing devices as a list 
+        /// </summary>
+        /// <remarks>This return a list of names</remarks>
+        /// <returns></returns>
         [Microsoft.AspNetCore.Mvc.HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
+            IEnumerable<API_DEVICE_MODEL> devices = dnp3_db.read_all();
+            List<string> d_names = new List<string>();
+            foreach (API_DEVICE_MODEL device in devices) {
+                d_names.Add(device.device_name);
+            }
+            return d_names;
         }
 
-        // GET: api/Devices/5
+        // GET: api/device/<device_name>
         /// <summary>
         /// Get configurations for a DNP3 device by his name
         /// </summary>
@@ -41,7 +53,7 @@ namespace DNP3_API.Controllers
         /// Populate a DNP3 device
         /// </summary>
         /// <remarks>This API will insert a DNP3 device.</remarks>
-        /// <param name="id"></param>
+        /// <param name="device"> A DNP3 device model</param>
         /// <response code="200">The new device was created</response>
         /// <response code="400">The new device was not created</response>
         [Microsoft.AspNetCore.Mvc.HttpPost]

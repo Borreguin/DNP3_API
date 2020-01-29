@@ -69,8 +69,8 @@ namespace UTILS
             {
                 rows.Add(row);
             }
-
-            return ConvertTo<T>(rows);
+            var aux = ConvertTo<T>(rows);
+            return aux;
         }
 
         /*
@@ -124,12 +124,14 @@ namespace UTILS
         public static T CreateItem<T>(DataRow row)
         {
             T obj = default(T);
+            // prop is the object to fill up
             obj = Activator.CreateInstance<T>();
             var tipo = obj.GetType();
             if (row != null)
             {
                 foreach (DataColumn column in row.Table.Columns)
                 {
+                    
                     PropertyInfo prop = tipo.GetProperty(column.ColumnName);
                     try
                     {
@@ -141,6 +143,7 @@ namespace UTILS
                                 && value.GetType().Name.Equals(typeof(string).Name))
                             {
                                 DateTime timestamp = toDateTime((string)value);
+                                // set value inside object:
                                 prop.SetValue(obj, timestamp, null);
                             }
                             else if (prop.PropertyType.Name.Equals(typeof(JObject).Name)
@@ -148,15 +151,18 @@ namespace UTILS
                             {
                                 if (IsValidJson((string)value))
                                 {
+                                    // set value inside object:
                                     prop.SetValue(obj, JObject.Parse((string)value), null);
                                 }
                                 else
                                 {
+                                    // set value inside object:
                                     prop.SetValue(obj, new JObject(), null);
                                 }
                             }
                             else
                             {
+                                // set value inside object:
                                 prop.SetValue(obj, value, null);
                             }
 
@@ -176,6 +182,7 @@ namespace UTILS
                                     prop = tipo.GetProperty(p.Name);
                                     Type propertyType = prop.PropertyType;
                                     jvalue = Convert.ChangeType(jvalue, propertyType);
+                                    // set value inside object:
                                     prop.SetValue(obj, jvalue, null);
                                 }
                             }

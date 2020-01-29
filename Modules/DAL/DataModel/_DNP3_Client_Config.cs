@@ -14,8 +14,8 @@
         private readonly SqliteConnection conn = new SqliteConnection();
         private readonly string db_table = "devices";
         private static readonly string KEY_1_ID_MEDIDOR = "Id";
-        private static readonly string KEY_2_ID_NAME = "Id_name";
-        private static readonly string KEY_3_NAME = "Name";
+        private static readonly string KEY_2_ID_NAME = "device_code";
+        private static readonly string KEY_3_NAME = "device_name";
         private static readonly string KEY_4_DNP3_CONFIG = "Client_config";
         private static readonly string KEY_5_NETWORK = "Network_config";
         private static readonly string KEY_6_SERIAL = "Serial_config";
@@ -165,21 +165,8 @@
                         reader.Close();
                         if (dt.Rows.Count > 0)
                         {
-                            DataRow row = dt.Rows[0];
-                            JObject dnp3_config = JObject.Parse(row[KEY_4_DNP3_CONFIG].ToString());
-                            JObject comm_net = JObject.Parse(row[KEY_5_NETWORK].ToString());
-                            JObject comm_ser = JObject.Parse(row[KEY_6_SERIAL].ToString());
-                            JObject json_config = JObject.Parse(row[KEY_7_JSON_INFO].ToString());
-                            JObject dev_config = json_config[KEY_JSON_INFO_1].ToObject<JObject>();
-                            // constructing device
-                            device = CollectionHelper.CreateItem<API_DEVICE_MODEL>(dev_config);
-                            device.gen_com_network = CollectionHelper.CreateItem<DTO_GEN_COM_NETWORK>(comm_net);
-                            device.gen_com_serial = CollectionHelper.CreateItem<DTO_GEN_COM_SERIAL>(comm_ser);
-
-                            device.device_name = row[KEY_3_NAME].ToString();
-                            device.setDeviceCode = row[KEY_2_ID_NAME].ToString();
+                            device = from_row_to_device(dt.Rows[0]);
                         }
-                        
                     }
                 }
             }
@@ -191,8 +178,35 @@
             return device;
         }
 
-        public IEnumerable<GEN_DEVICE> read_all() {
-            List<GEN_DEVICE> lstDevice = new List<GEN_DEVICE>();
+        /// <summary>
+        /// Converts a row in device Object
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public API_DEVICE_MODEL from_row_to_device(DataRow row) {
+
+            API_DEVICE_MODEL device = new API_DEVICE_MODEL();
+            JObject dnp3_config = JObject.Parse(row[KEY_4_DNP3_CONFIG].ToString());
+            JObject comm_net = JObject.Parse(row[KEY_5_NETWORK].ToString());
+            JObject comm_ser = JObject.Parse(row[KEY_6_SERIAL].ToString());
+            JObject json_config = JObject.Parse(row[KEY_7_JSON_INFO].ToString());
+            JObject dev_config = json_config[KEY_JSON_INFO_1].ToObject<JObject>();
+            // constructing device
+            device = CollectionHelper.CreateItem<API_DEVICE_MODEL>(dev_config);
+            device.gen_com_network = CollectionHelper.CreateItem<DTO_GEN_COM_NETWORK>(comm_net);
+            device.gen_com_serial = CollectionHelper.CreateItem<DTO_GEN_COM_SERIAL>(comm_ser);
+            device.dnp3_client_config = CollectionHelper.CreateItem<DNP3_CLIENT_CONFIG>(dnp3_config);
+
+            device.device_name = row[KEY_3_NAME].ToString();
+            device.setDeviceCode = row[KEY_2_ID_NAME].ToString();
+
+            return device;
+        }
+
+
+
+        public IEnumerable<API_DEVICE_MODEL> read_all() {
+            List<API_DEVICE_MODEL> lstDevice = new List<API_DEVICE_MODEL>();
             DataTable dt = new DataTable();
             try
             {
@@ -204,8 +218,11 @@
                     {
                         SQLiteDataReader reader = command.ExecuteReader();
                         dt.Load(reader);
-                        reader.Close();
-                        lstDevice = CollectionHelper.ConvertTo<GEN_DEVICE>(dt).ToList();
+                        API_DEVICE_MODEL device;
+                        foreach (DataRow row in dt.Rows) {
+                            device = from_row_to_device(row);
+                            lstDevice.Add(device);
+                        }
                     }
                 }
             }

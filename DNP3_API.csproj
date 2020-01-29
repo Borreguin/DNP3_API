@@ -18,6 +18,12 @@
     <DockerfileContext>.</DockerfileContext>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>.\DNP3_API.xml</DocumentationFile>
+    <OutputPath>.\</OutputPath>
+  </PropertyGroup>
 
   
 
