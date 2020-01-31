@@ -9,12 +9,14 @@
             Return names of existing devices as a list 
             </summary>
             <remarks>This return a list of names</remarks>
+            <response code="204">There is not devices </response>
             <returns></returns>
         </member>
         <member name="M:DNP3_API.Controllers.DevicesController.Get(System.String)">
             <summary>
             Get configurations for a DNP3 device by his name
             </summary>
+            <response code="204">There is not device that corresponds to [device_name] </response>
             <param name="device_name"></param>
             <returns></returns>
         </member>
@@ -26,6 +28,21 @@
             <param name="device"> A DNP3 device model</param>
             <response code="200">The new device was created</response>
             <response code="400">The new device was not created</response>
+        </member>
+        <member name="M:DNP3_API.Controllers.DevicesController.Put(System.String,DTO.API_DEVICE_MODEL)">
+            <summary>
+            Updates a DNP3 device if it exists otherwise insert a new one 
+            </summary>
+            <param name="device_name"></param>
+            <param name="device_config"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DNP3_API.Controllers.DevicesController.Delete(System.String)">
+            <summary>
+            Removes a DNP3 device
+            </summary>
+            <param name="device_name"></param>
+            <returns></returns>
         </member>
         <member name="M:DAL._DNP3_client_DB.from_row_to_device(System.Data.DataRow)">
             <summary>

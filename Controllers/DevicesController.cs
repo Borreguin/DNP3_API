@@ -22,8 +22,10 @@ namespace DNP3_API.Controllers
         /// Return names of existing devices as a list 
         /// </summary>
         /// <remarks>This return a list of names</remarks>
+        /// <response code="204">There is not devices </response>
         /// <returns></returns>
         [Microsoft.AspNetCore.Mvc.HttpGet]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public IEnumerable<string> Get()
         {
             _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
@@ -39,9 +41,11 @@ namespace DNP3_API.Controllers
         /// <summary>
         /// Get configurations for a DNP3 device by his name
         /// </summary>
+        /// <response code="204">There is not device that corresponds to [device_name] </response>
         /// <param name="device_name"></param>
         /// <returns></returns>
         [Microsoft.AspNetCore.Mvc.HttpGet("{device_name}", Name = "Get")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public API_DEVICE_MODEL Get(string device_name)
         {
             _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
@@ -67,16 +71,37 @@ namespace DNP3_API.Controllers
             return result.get_http_response();
         }
 
-        // PUT: api/Devices/5
-        [Microsoft.AspNetCore.Mvc.HttpPut("{id}")]
-        public void Put(int id, [Microsoft.AspNetCore.Mvc.FromBody] string value)
+        /// <summary>
+        /// Updates a DNP3 device if it exists otherwise insert a new one 
+        /// </summary>
+        /// <param name="device_name"></param>
+        /// <param name="device_config"></param>
+        /// <returns></returns>
+        [Microsoft.AspNetCore.Mvc.HttpPut("{device_name}")]
+        public HttpResponseMessage Put(string device_name, [Microsoft.AspNetCore.Mvc.FromBody] API_DEVICE_MODEL device_config)
         {
+            _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
+            ReturnInfo result = dnp3_db.update(device_name, device_config);
+            return new ReturnInfo()
+            {
+                succesful = result.succesful,
+                message = result.succesful? $"Device [{device_name}] was updated." : $"Device [{device_name}] was not updated.",
+                inner_exception =  result.succesful? null: result.inner_exception
+            }.get_http_response();
         }
 
         // DELETE: api/ApiWithActions/5
-        [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
-        public void Delete(int id)
+        /// <summary>
+        /// Removes a DNP3 device
+        /// </summary>
+        /// <param name="device_name"></param>
+        /// <returns></returns>
+        [Microsoft.AspNetCore.Mvc.HttpDelete("{device_name}")]
+        public HttpResponseMessage Delete(string device_name)
         {
+            _DNP3_client_DB dnp3_db = new _DNP3_client_DB();
+            ReturnInfo result = dnp3_db.delete(device_name);
+            return result.get_http_response();
         }
     }
 }

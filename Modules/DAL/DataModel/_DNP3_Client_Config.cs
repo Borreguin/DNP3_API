@@ -22,6 +22,12 @@
         private static readonly string KEY_7_JSON_INFO = "JSON_info";
         private static readonly string KEY_JSON_INFO_1 = "device_config";
 
+        string[] attr_device_config = new string[] { "device_serie", "active", "group", "trace_level" };
+        string[] attr_dnp3_config = new string[] { "remote_address", "server_address", "integrity_polling_seconds",
+                    "class1_polling_seconds", "class2_polling_seconds", "class3_polling_seconds", "comm_media"};
+        string[] attr_comm_net = new string[] { "ip_address", "port", "protocol" };
+        string[] attr_comm_ser = new string[] { "baud_rate", "data_bit", "parity", "stop_bits", "timeout" };
+
         public bool create_table()
         {
             conn.create_db_if_not_exist();
@@ -60,6 +66,9 @@
                     trace_level = device_model.trace_level,
                     group = device_model.group,
                 };
+                if (device_model.device_code == null) {
+                    device_model.setDeviceCode = device_model.getCode();
+                }
                 device.setDeviceCode = device_model.device_code;
                 return insert(device);
             }
@@ -80,15 +89,9 @@
                 using (var sqlite = conn.new_connection())
                 {
 
-                    string[] attr_device_config = new string[] { "device_serie", "active", "group", "trace_level"};
                     JObject device_config = CollectionHelper.Get_json_from(device, attr_device_config);
 
-                    string[] attr_dnp3_config = new string[] { "remote_address", "server_address", "integrity_polling_seconds",
-                    "class1_polling_seconds", "class2_polling_seconds", "class3_polling_seconds", "comm_media"};
                     JObject dnp3_config = CollectionHelper.Get_json_from(device.dnp3_client_config, attr_dnp3_config);
-
-                    string[] attr_comm_net = new string[] { "ip_address", "port", "protocol" };
-                    string[] attr_comm_ser = new string[] { "baud_rate", "data_bit", "parity", "stop_bits", "timeout" };
                     JObject comm_net = CollectionHelper.Get_json_from(device.gen_com_network, attr_comm_net);
                     JObject comm_ser = CollectionHelper.Get_json_from(device.gen_com_serial, attr_comm_ser);
 
@@ -149,8 +152,48 @@
             }
         }
 
+        public ReturnInfo delete(string device_name)
+        {
+            try {
+                using (var sqlite = conn.new_connection())
+                {
+                    sqlite.Open();
+                    string sql = $"DELETE FROM {db_table} WHERE {KEY_3_NAME} = '{device_name}'";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, sqlite))
+                    {
+                        SQLiteDataReader reader = command.ExecuteReader();
+                        Console.WriteLine(reader);
+                        if (reader.RecordsAffected > 1)
+                        {
+                            return new ReturnInfo()
+                            {
+                                succesful = true,
+                                message = $"[{device_name}] was removed",
+                                inner_exception = null
+                            };
+                        }
+                        else {
+                            return new ReturnInfo()
+                            {
+                                succesful = false,
+                                message = $"[{device_name}] was not found",
+                                inner_exception = null
+                            };
+                        }
+
+                    }
+                }
+            }catch(Exception e){
+                return new ReturnInfo() {
+                    succesful=false,
+                    message=$"[{device_name}] was not deleted. Check the exception" + e.ToString(),
+                    inner_exception=e
+                };
+            }
+        }
+
         public API_DEVICE_MODEL read_by_device_name(string device_name) {
-            API_DEVICE_MODEL device = new API_DEVICE_MODEL();
+            API_DEVICE_MODEL device = null;
             DataTable dt = new DataTable();
             try
             {
@@ -233,7 +276,59 @@
             return lstDevice;
         }
 
+        public ReturnInfo update(string device_name, API_DEVICE_MODEL update_device)
+        {
+            API_DEVICE_MODEL device = read_by_device_name(device_name);
+            if (device == null) {
+                return insert(update_device);
+            }
+
+            try
+            {
+                using (var sqlite = conn.new_connection())
+                {
+                    
+                    JObject device_config = CollectionHelper.Get_json_from(update_device, attr_device_config);
+                    JObject dnp3_config = CollectionHelper.Get_json_from(update_device.dnp3_client_config, attr_dnp3_config);
+                    JObject comm_net = CollectionHelper.Get_json_from(update_device.gen_com_network, attr_comm_net);
+                    JObject comm_ser = CollectionHelper.Get_json_from(update_device.gen_com_serial, attr_comm_ser);
+
+                    JObject JSON_object = new JObject();
+                    JSON_object.Add(KEY_JSON_INFO_1, device_config);
+
+                    sqlite.Open();
+                    string sql = $"UPDATE {db_table} SET " +
+                    $"{KEY_3_NAME} = '{update_device.device_name}', " +
+                    $"{KEY_4_DNP3_CONFIG} = '{dnp3_config.ToString()}', " +
+                    $"{KEY_5_NETWORK} = '{((comm_net == null) ? "" : comm_net.ToString())}', " +
+                    $"{KEY_6_SERIAL} = '{((comm_ser == null) ? "" : comm_ser.ToString())}', " +
+                    $"{KEY_7_JSON_INFO} = '{JSON_object.ToString()}' " +
+                    $"WHERE " +
+                    $"{KEY_2_ID_NAME} = '{device.device_code}'";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, sqlite))
+                    {
+                        command.ExecuteNonQuery();
+                        return new ReturnInfo
+                        {
+                            succesful = true,
+                            message = $"Device {device.device_name} ha sido actualizado",
+                            inner_exception = null
+                        };
+                    }
+                }
+               
+            }
+            catch (SQLiteException e)
+            {
+                return new ReturnInfo()
+                {
+                    succesful = false,
+                    message = $"Update operation of [{device_name}] was not successful",
+                    inner_exception = e
+                };
+            }
+                
+        }
 
     }
-
 }

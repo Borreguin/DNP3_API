@@ -136,6 +136,10 @@
             _traceLevel = TraceLevel.Off;
         }
 
+        public string getCode() {
+            return getCode(this.device_name);
+        }
+
         public string getCode(string Name) {
             Name = Name.Replace(" ", "_").ToUpper();
             
