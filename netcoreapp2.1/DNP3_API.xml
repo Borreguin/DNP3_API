@@ -4,7 +4,7 @@
         <name>DNP3_API</name>
     </assembly>
     <members>
-        <member name="M:DNP3_API.Controllers.DevicesController.Get">
+        <member name="M:DNP3_API.Controllers.DeviceController.Get">
             <summary>
             Return names of existing devices as a list 
             </summary>
@@ -12,7 +12,7 @@
             <response code="204">There is not devices </response>
             <returns></returns>
         </member>
-        <member name="M:DNP3_API.Controllers.DevicesController.Get(System.String)">
+        <member name="M:DNP3_API.Controllers.DeviceController.Get(System.String)">
             <summary>
             Get configurations for a DNP3 device by his name
             </summary>
@@ -20,7 +20,7 @@
             <param name="device_name"></param>
             <returns></returns>
         </member>
-        <member name="M:DNP3_API.Controllers.DevicesController.Post(DTO.API_DEVICE_MODEL)">
+        <member name="M:DNP3_API.Controllers.DeviceController.Post(DTO.API_DEVICE_MODEL)">
             <summary>
             Populate a DNP3 device
             </summary>
@@ -29,7 +29,7 @@
             <response code="200">The new device was created</response>
             <response code="400">The new device was not created</response>
         </member>
-        <member name="M:DNP3_API.Controllers.DevicesController.Put(System.String,DTO.API_DEVICE_MODEL)">
+        <member name="M:DNP3_API.Controllers.DeviceController.Put(System.String,DTO.API_DEVICE_MODEL)">
             <summary>
             Updates a DNP3 device if it exists otherwise insert a new one 
             </summary>
@@ -37,7 +37,7 @@
             <param name="device_config"></param>
             <returns></returns>
         </member>
-        <member name="M:DNP3_API.Controllers.DevicesController.Delete(System.String)">
+        <member name="M:DNP3_API.Controllers.DeviceController.Delete(System.String)">
             <summary>
             Removes a DNP3 device
             </summary>

@@ -1,10 +1,10 @@
 ﻿namespace DTO
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
-    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
     public class API_DEVICE_MODEL
     {
         private string _IdDeviceName;
@@ -13,9 +13,9 @@
         private string _Name;
         private int _GroupScan;
         private bool _Active;
-        private int _unique_code = (int)(DateTime.Now.Year + DateTime.Now.Month * 1000 
-            + DateTime.Now.Day * 1000 + DateTime.Now.Hour * 100 + DateTime.Now.Minute * 10
-            + DateTime.Now.Second + DateTime.Now.Millisecond / 100);
+        private string _unique_code = "" + DateTime.Now.Year + DateTime.Now.Month  
+            + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute
+            + DateTime.Now.Second + DateTime.Now.Millisecond;
 
 
 
@@ -141,20 +141,9 @@
         }
 
         public string getCode(string Name) {
-            Name = Name.Replace(" ", "_").ToUpper();
-            
-            int n = Math.Min(10, Name.Length);
-            if (n < 10) {
-                int r = 10 - n;
-                for (int i = 0; i <= r; i++) {
-                    Name += "_";
-                }
-            }
-            string n_str = Name.Substring(0, 5) +
-                Name.Substring((int) (n/2), 5) +
-                Name.Substring(Name.Length-5);
-            n_str = "DNP-" + n_str.ToUpper() + "-" + _unique_code;         
-            return n_str;
+            Name = Name.Replace(" ", "_").ToUpper() + _unique_code;
+            string hashedData = ComputeSha256Hash(Name);     
+            return hashedData;
         }
 
         public string setDeviceCode
@@ -162,6 +151,24 @@
             set
             {
                 _IdDeviceName = value;
+            }
+        }
+
+        static string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
 

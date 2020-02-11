@@ -15,7 +15,7 @@ namespace DNP3_API.Controllers
 {
     [Route("api/device")]
     [ApiController]
-    public class DevicesController : ControllerBase
+    public class DeviceController : ControllerBase
     {
         // GET: api/device
         /// <summary>

@@ -4,7 +4,8 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
-    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
     public class GEN_DEVICE
     {
         private string _IdDeviceName;
@@ -14,6 +15,9 @@
         private int _GroupScan;
         private bool _Active;
         private DNP3_CLIENT_CONFIG _configuration;
+        private string _unique_code = "" + DateTime.Now.Year + DateTime.Now.Month
+            + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute
+            + DateTime.Now.Second + DateTime.Now.Millisecond;
 
         public DNP3_CLIENT_CONFIG dnp3_client_config = new DNP3_CLIENT_CONFIG();
         public DTO_GEN_COM_NETWORK gen_com_network = new DTO_GEN_COM_NETWORK();
@@ -149,21 +153,27 @@
         }
 
         public string getCode(string Name) {
-            Name = Name.Replace(" ", "*").ToUpper();
-            DateTime ldate = DateTime.Now;
-            int n = Math.Min(10, Name.Length);
-            if (n < 10) {
-                int r = 10 - n;
-                for (int i = 0; i <= r; i++) {
-                    Name += "_";
-                }
-            }
-            string n_str = Name.Substring(0, 5) +
-                Name.Substring((int) (n/2), 5) +
-                Name.Substring(Name.Length-5);
-            n_str = "DNP-" + n_str.ToUpper() + "-" + (int)(ldate.Year + ldate.Month*1000 + ldate.Day*1000 + ldate.Hour*100 + ldate.Minute*10 + ldate.Second + ldate.Millisecond/100);
-            return n_str;
+            Name = Name.Replace(" ", "_").ToUpper() + _unique_code;
+            string hashedData = ComputeSha256Hash(Name);
+            return hashedData;
         }
 
+        static string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
     }
 }
