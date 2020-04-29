@@ -1,5 +1,7 @@
 ﻿namespace DTO
-{
+{   /*
+        Esta clase realiza las operaciones CRUD relativas a API_DEVICE_MODEL
+     */
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -15,9 +17,6 @@
         private int _GroupScan;
         private bool _Active;
         private DNP3_CLIENT_CONFIG _configuration;
-        private string _unique_code = "" + DateTime.Now.Year + DateTime.Now.Month
-            + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute
-            + DateTime.Now.Second + DateTime.Now.Millisecond;
 
         public DNP3_CLIENT_CONFIG dnp3_client_config = new DNP3_CLIENT_CONFIG();
         public DTO_GEN_COM_NETWORK gen_com_network = new DTO_GEN_COM_NETWORK();
@@ -147,24 +146,24 @@
             _GroupScan = 100;
             _Name = "New Device";
 
-            _IdDeviceName = getCode(_Name);
+            _IdDeviceName = getCode();
             _configuration = new DNP3_CLIENT_CONFIG();
             _traceLevel = (int)TraceLevel.Off;
         }
 
-        public string getCode(string Name) {
-            Name = Name.Replace(" ", "_").ToUpper() + _unique_code;
-            string hashedData = ComputeSha256Hash(Name);
+        public string getCode() {
+            string id = _Name.ToUpper() + DateTime.Now.ToString();
+            string hashedData = ComputeMD5Hash(id);
             return hashedData;
         }
 
-        static string ComputeSha256Hash(string rawData)
+        static string ComputeMD5Hash(string rawData)
         {
-            // Create a SHA256   
-            using (SHA256 sha256Hash = SHA256.Create())
+            // Create a MD5 HASH   
+            using (MD5 MD5Hash = MD5.Create())
             {
                 // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+                byte[] bytes = MD5Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
 
                 // Convert byte array to a string   
                 StringBuilder builder = new StringBuilder();

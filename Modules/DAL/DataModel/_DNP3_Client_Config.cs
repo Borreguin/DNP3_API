@@ -13,8 +13,8 @@
     {
         private readonly SqliteConnection conn = new SqliteConnection();
         private readonly string db_table = "devices";
-        private static readonly string KEY_1_ID_MEDIDOR = "Id";
-        private static readonly string KEY_2_ID_NAME = "device_code";
+        private static readonly string KEY_1_ID = "Id";
+        private static readonly string KEY_2_DEVICE_CODE = "device_code";
         private static readonly string KEY_3_NAME = "device_name";
         private static readonly string KEY_4_DNP3_CONFIG = "Client_config";
         private static readonly string KEY_5_NETWORK = "Network_config";
@@ -36,8 +36,8 @@
             {
                 sqlite.Open();
                 string sql = $"create table {db_table} (" +
-                    $"{KEY_1_ID_MEDIDOR} INTEGER PRIMARY KEY, " +
-                    $"{KEY_2_ID_NAME} TEXT NOT NULL UNIQUE, " +
+                    $"{KEY_1_ID} INTEGER PRIMARY KEY, " +
+                    $"{KEY_2_DEVICE_CODE} TEXT NOT NULL UNIQUE, " +
                     $"{KEY_3_NAME} TEXT NOT NULL UNIQUE, " +
                     $"{KEY_4_DNP3_CONFIG} TEXT, " +
                     $"{KEY_5_NETWORK} TEXT, " +
@@ -67,9 +67,8 @@
                     group = device_model.group,
                 };
                 if (device_model.device_code == null) {
-                    device_model.setDeviceCode = device_model.getCode();
+                    device.setDeviceCode = device_model.device_code;
                 }
-                device.setDeviceCode = device_model.device_code;
                 return insert(device);
             }
             catch (Exception ex) {
@@ -100,7 +99,7 @@
 
                     sqlite.Open();
                     string sql = $"INSERT INTO {db_table} " +
-                    $"({KEY_2_ID_NAME}, " +
+                    $"({KEY_2_DEVICE_CODE}, " +
                     $"{KEY_3_NAME}, " +
                     $"{KEY_4_DNP3_CONFIG}, " +
                     $"{KEY_5_NETWORK}, " +
@@ -127,7 +126,7 @@
             }
             catch (SQLiteException e)
             {
-                // Si el registro ya existe, este se vuelve a actualizar
+                // Si el registro ya existe, no es posible insertar el dispositivo
                 if (e.Message.ToUpper().Contains("UNIQUE CONSTRAINT"))
                 {
                     return new ReturnInfo
@@ -241,7 +240,7 @@
             device.dnp3_client_config = CollectionHelper.CreateItem<DNP3_CLIENT_CONFIG>(dnp3_config);
 
             device.device_name = row[KEY_3_NAME].ToString();
-            device.setDeviceCode = row[KEY_2_ID_NAME].ToString();
+            device.setDeviceCode = row[KEY_2_DEVICE_CODE].ToString();
 
             return device;
         }
@@ -304,7 +303,7 @@
                     $"{KEY_6_SERIAL} = '{((comm_ser == null) ? "" : comm_ser.ToString())}', " +
                     $"{KEY_7_JSON_INFO} = '{JSON_object.ToString()}' " +
                     $"WHERE " +
-                    $"{KEY_2_ID_NAME} = '{device.device_code}'";
+                    $"{KEY_2_DEVICE_CODE} = '{device.device_code}'";
                     using (SQLiteCommand command = new SQLiteCommand(sql, sqlite))
                     {
                         command.ExecuteNonQuery();

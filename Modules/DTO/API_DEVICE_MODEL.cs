@@ -1,10 +1,12 @@
 ﻿namespace DTO
 {
+    /*
+     Esta clase es de muy alto nivel y puede tener ciertas transformaciones de datos 
+     se apoya en la clase GEN_DEVICE para realizar operaciones CRUD
+     */
     using System;
     using System.ComponentModel;
     using System.Diagnostics;
-    using System.Security.Cryptography;
-    using System.Text;
     public class API_DEVICE_MODEL
     {
         private string _IdDeviceName;
@@ -13,10 +15,6 @@
         private string _Name;
         private int _GroupScan;
         private bool _Active;
-        private string _unique_code = "" + DateTime.Now.Year + DateTime.Now.Month  
-            + DateTime.Now.Day + DateTime.Now.Hour + DateTime.Now.Minute
-            + DateTime.Now.Second + DateTime.Now.Millisecond;
-
 
 
         public DNP3_CLIENT_CONFIG dnp3_client_config = new DNP3_CLIENT_CONFIG();
@@ -131,44 +129,17 @@
             _GroupScan = 100;
             _Name = "New Device";
 
-            _IdDeviceName = getCode(_Name);
+            _IdDeviceName = null;
             //_configuration = DNP3_CLIENT_CONFIG;//
             _traceLevel = TraceLevel.Off;
         }
 
-        public string getCode() {
-            return getCode(this.device_name);
-        }
-
-        public string getCode(string Name) {
-            Name = Name.Replace(" ", "_").ToUpper() + _unique_code;
-            string hashedData = ComputeSha256Hash(Name);     
-            return hashedData;
-        }
-
+        
         public string setDeviceCode
         {
             set
             {
                 _IdDeviceName = value;
-            }
-        }
-
-        static string ComputeSha256Hash(string rawData)
-        {
-            // Create a SHA256   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                // ComputeHash - returns byte array  
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-
-                // Convert byte array to a string   
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
             }
         }
 

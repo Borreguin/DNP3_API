@@ -85,6 +85,7 @@ namespace DTO
             }
             set
             {
+                validate_positive_value(value);
                 _Class1PollingSeconds = value;
             }
         }
@@ -98,6 +99,7 @@ namespace DTO
             }
             set
             {
+                validate_positive_value(value);
                 _Class2PollingSeconds = value;
             }
         }
@@ -111,6 +113,7 @@ namespace DTO
             }
             set
             {
+                validate_positive_value(value);
                 _Class3PollingSeconds = value;
             }
         }
@@ -124,45 +127,10 @@ namespace DTO
             }
             set
             {
+                validate_positive_value(value);
                 _IntegrityPollingSeconds = value;
             }
         }
-
-        // TODO:
-        // Realizar autentificación si fuera necesario:
-        /*
-        [DisplayName("Authentication"), Category("6. Segurity"), Description("Activar autenticación en el protocolo")]
-        public bool Autentication
-        {
-            get { return Authentication; }
-            set { Authentication = value; }
-        }
-
-        [DisplayName("User Number"), Category("6. Segurity"), Description("Número de usuario")]
-        public int User_Number
-        {
-            get
-            {
-                return UserNumber;
-            }
-            set
-            {
-                UserNumber = value;
-            }
-        }
-
-        [DisplayName("Update KeyHex"), Category("6. Segurity"), Description("Asignar una clave de usuario")]
-        public string Update_KeyHex
-        {
-            get
-            {
-                return UpdateKeyHex;
-            }
-            set
-            {
-                UpdateKeyHex = value;
-            }
-        }*/
 
         public void validate_positive_value(int to_validate)
         {
